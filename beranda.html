@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ExploreTravel - Jelajahi Destinasi Impian Anda</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+    header {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 20px 40px;
+      text-align: center;
+      position: relative;
+    }
+    /* Navigasi di pojok kanan atas */
+    .nav {
+      position: absolute;
+      top: 20px;
+      right: 40px;
+    }
+    .nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 15px;
+      padding: 8px 12px;
+      border: 1px solid #fff;
+      border-radius: 3px;
+      transition: background-color 0.3s ease;
+    }
+    .nav a:hover {
+      background-color: #fff;
+      color: #4CAF50;
+    }
+    .hero {
+      background: url('https://source.unsplash.com/1600x900/?travel,adventure') no-repeat center center/cover;
+      height: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #fff;
+      padding: 0 20px;
+    }
+    .hero h1 {
+      font-size: 48px;
+      margin: 0;
+    }
+    .hero p {
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    /* Informasi fitur pertama dalam hero */
+    .hero-feature {
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 15px 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .hero-feature h2 {
+      font-size: 32px;
+      margin: 0 0 10px;
+    }
+    .hero-feature p {
+      font-size: 18px;
+      margin: 0;
+    }
+    .cta {
+      display: inline-block;
+      padding: 15px 30px;
+      background-color: #fff;
+      color: #4CAF50;
+      text-decoration: none;
+      font-size: 18px;
+      border-radius: 5px;
+      margin-top: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      transition: background-color 0.3s ease;
+    }
+    .cta:hover {
+      background-color: #e6e6e6;
+    }
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 40px 20px;
+      background-color: #fff;
+    }
+    .feature-item {
+      flex: 1 1 300px;
+      background: #f9f9f9;
+      border-radius: 5px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .feature-item h3 {
+      color: #4CAF50;
+      margin-bottom: 10px;
+    }
+    .feature-item p {
+      font-size: 16px;
+      color: #333;
+      line-height: 1.5;
+    }
+    footer {
+      background-color: #4CAF50;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ExploreTravel</h1>
+    <div class="nav">
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+      <a href="index.html">Home</a>
+    </div>
+    <h4>Making Your Journey Effortless and Meaningful</h4>
+  </header>
+  <section class="hero">
+    <div>
+      <h1>Jelajahi Destinasi Impian Anda</h1>
+      <p>Perencanaan perjalanan yang terkustomisasi, rute terbaik, dan rekomendasi akomodasi dalam satu platform.</p>
+      <!-- Informasi fitur pertama ditampilkan sebelum tombol CTA -->
+      <div class="hero-feature">
+        <h2>Rute Terbaik</h2>
+        <p>Dapatkan rute perjalanan terbaik dengan peta interaktif dan rekomendasi destinasi wisata yang teruji.</p>
+      </div>
+      <a href="index.html" class="cta">Mulai Sekarang</a>
+    </div>
+  </section>
+  <section class="features">
+    <div class="feature-item">
+      <h3>Kustomisasi Perjalanan</h3>
+      <p>Sesuaikan perjalanan Anda berdasarkan preferensi dan minat pribadi.</p>
+    </div>
+    <div class="feature-item">
+      <h3>Rekomendasi Akomodasi</h3>
+      <p>Pilih akomodasi terbaik dari berbagai opsi sesuai dengan rute perjalanan Anda.</p>
+    </div>
+    <div class="feature-item">
+      <h3>Mudah & Cepat</h3>
+      <p>Antarmuka yang intuitif dan responsif untuk pengalaman perjalanan yang menyenangkan.</p>
+    </div>
+  </section>
+  <footer>
+    <p>&copy; 2025 ExploreTravel. All rights reserved.</p>
+  </footer>
+</body>
+</html>

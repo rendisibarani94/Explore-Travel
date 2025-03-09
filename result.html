@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rute, Pilih Akomodasi - ExploreTravel</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Leaflet Routing Machine CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+  <!-- Leaflet MarkerCluster CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #4CAF50;
+      padding: 20px;
+      text-align: center;
+      color: #fff;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    #map {
+      height: 400px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+    }
+    .route-item,
+    .accommodation-item {
+      background-color: #e9f5e9;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-left: 5px solid #4CAF50;
+      cursor: pointer;
+    }
+    .accommodation-item.selected {
+      border: 2px solid #4CAF50;
+      background-color: #d0f0c0;
+    }
+    .accommodation-section {
+      margin-top: 30px;
+    }
+    .accommodation-section select {
+      padding: 10px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+    #btn-final {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    #btn-final:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    button.wa-btn {
+      padding: 5px 10px;
+      margin-top: 5px;
+      background-color: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ExploreTravel</h1>
+    <h4>Pilih Akomodasi Setelah Rute</h4>
+  </header>
+  <div class="container">
+    <!-- Tampilan rute rekomendasi -->
+    <div id="result"></div>
+    <div id="map"></div>
+
+    <!-- Bagian pemilihan akomodasi -->
+    <div class="accommodation-section">
+      <h2>Pilih Akomodasi</h2>
+      <select id="accommodationType">
+        <option value="all">Semua Akomodasi</option>
+        <option value="penginapan">Penginapan</option>
+        <option value="restoran">Restoran</option>
+      </select>
+      <div id="accommodation-list"></div>
+      <button id="btn-final" disabled>Lanjut ke Hasil</button>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Leaflet Routing Machine JS -->
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+  <!-- Leaflet MarkerCluster JS -->
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script>
+    // Helper function to extract query parameters from URL
+    function getQueryParams() {
+      var params = {};
+      var queryString = window.location.search.substring(1);
+      var vars = queryString.split("&");
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        params[pair[0]] = decodeURIComponent(pair[1]);
+      }
+      return params;
+    }
+
+    // Function to format number to Rupiah currency
+    function formatRupiah(angka) {
+      let numberString = angka.toString();
+      let sisa = numberString.length % 3;
+      let rupiah = numberString.substr(0, sisa);
+      let ribuan = numberString.substr(sisa).match(/\d{3}/g);
+      if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+      }
+      return "Rp." + rupiah + ".00";
+    }
+
+    // Helper function to convert a local phone number (starting with 0)
+    // to international format (assuming Indonesia: country code 62)
+    function formatWhatsAppNumber(phone) {
+      if (!phone) return "";
+      // Remove non-numeric characters
+      phone = phone.replace(/[^0-9]/g, "");
+      if (phone.startsWith("0")) {
+        return "62" + phone.substring(1);
+      }
+      return phone;
+    }
+
+    const params = getQueryParams();
+    const startLocation = params.startLocation || "Lokasi Awal";
+    const destination = params.destination || "Lokasi Tujuan";
+    const tourType = params.tourType || "";
+
+    // Data rute destinasi with phone contacts and image paths from images directory
+    const routes = {
+      sejarah: [
+        { name: 'Museum Batak (Balige, Kabupaten Toba)', coords: [2.579708, 99.137467], description: 'Museum artefak dan sejarah Batak.', contact: '08111112222', image: 'images/museumbataktoba.jpg' },
+        { name: 'Pusuk Buhit (Samosir)', coords: [2.611139, 98.948056], description: 'Tempat suci dan sejarah budaya Batak.', contact: '08111112223', image: 'images/pusukbuhit.jpg' },
+        { name: 'Tugu Pahlawan (Balige, Kabupaten Toba)', coords: [2.592911, 99.115825], description: 'Tugu mengenang perjuangan kemerdekaan.', contact: '08111113333', image: 'images/tugupahlawan.jpg' }
+      ],
+      alam: [
+        { name: 'Air Terjun Sipiso-piso (Karo)', coords: [2.9733, 98.3583], description: 'Air terjun tinggi di Indonesia.', contact: '08225555666', image: 'images/airterjunsipiso.jpg' },
+        { name: 'Bukit Simarjarunjung (Dairi)', coords: [2.691888, 98.577173], description: 'Pemandangan luar biasa ke Danau Toba.', contact: '08226666777', image: 'images/simarjarunjung.jpg' },
+        { name: 'Pantai Pasir Putih (Pangururan, Samosir)', coords: [2.7415, 98.5476], description: 'Pantai dengan panorama Danau Toba yang menawan.', contact: '08227777888', image: 'images/pantaipasirputih.jpg' }
+      ],
+      budaya: [
+        { name: 'Tomok (Samosir)', coords: [2.6613, 98.1147], description: 'Desa Tomok dengan tradisi Batak Toba.', contact: '08129990000', image: 'images/tomok.jpg' },
+        { name: 'Tarian Tor-Tor (Samosir)', coords: [2.6613, 98.1147], description: 'Tarian tradisional Batak.', contact: '08121212121', image: 'images/tortorsamosir.jpeg' },
+        { name: 'Desa Huta Siallagan (Samosir)', coords: [2.6667, 98.0971], description: 'Desa dengan rumah adat Batak.', contact: '081210102020', image: 'images/desasiallagan.jpg' }
+      ],
+      kuliner: [
+        { name: 'Restoran Sate Kelinci (Parapat, Simalungun)', coords: [2.2204, 98.8876], description: 'Restoran sate kelinci khas Danau Toba.', contact: '08125121213', image: 'images/satekelinci.jpg' },
+        { name: 'Mie Gomak (Tapanuli Utara)', coords: [2.9378, 98.4303], description: 'Mie khas Batak dengan bumbu kacang.', contact: '08129123456', image: 'images/miegomak.jpg' },
+        { name: 'Bolu Toba (Balige, Toba)', coords: [2.5724, 99.1376], description: 'Kue bolu khas Danau Toba.', contact: '08126141415', image: 'images/bolutoba.jpeg' }
+      ]
+    };
+
+    // Data akomodasi with phone contacts and image paths
+    const accommodations = [
+      { name: "Hotel Danau Toba", type: "penginapan", coords: [2.6000, 98.9000], description: "Hotel nyaman dekat Danau Toba.", travelCost: 150000, contact: "081234567890", image: 'images/hoteldanautoba.jpg' },
+      { name: "Villa Samosir", type: "penginapan", coords: [2.6200, 98.9500], description: "Villa dengan pemandangan indah.", travelCost: 200000, contact: "081298765432", image: 'images/vilasamosir.jpg' },
+      { name: "Penginapan Museum Batak", type: "penginapan", coords: [2.5805, 99.1370], description: "Akomodasi dekat Museum Batak.", travelCost: 130000, contact: "081233332222", image: 'images/penginapanmuseum.jpg' },
+      { name: "Guest House Pusuk Buhit", type: "penginapan", coords: [2.6120, 98.9490], description: "Guest house dekat Pusuk Buhit.", travelCost: 110000, contact: "081322223333", image: 'images/vilapusukbuhit.JPG' },
+      { name: "Villa Tugu Pahlawan", type: "penginapan", coords: [2.5935, 99.1160], description: "Villa nyaman dekat Tugu Pahlawan.", travelCost: 180000, contact: "081244445555", image: 'images/vilatugupahlawan.jpg' },
+      // Untuk kategori "alam"
+      { name: "Resort Bukit Simarjarunjung", type: "penginapan", coords: [2.6920, 98.5775], description: "Resort dengan pemandangan bukit dan danau.", travelCost: 230000, contact: "081612345678", image: 'images/resortsimarjarunjung.jpg' },
+      { name: "Penginapan Pantai Pasir Putih Samosir", type: "penginapan", coords: [2.7420, 98.5480], description: "Penginapan dekat Pantai Pasir Putih.", travelCost: 120000, contact: "081688889999", image: 'images/penginapanpasirputih.jpg' },
+     // Untuk kategori "budaya"
+      { name: "Hotel Budaya Toba", type: "penginapan", coords: [2.5802, 99.1372], description: "Hotel dengan sentuhan budaya Batak.", travelCost: 160000, contact: "081710102020", image: 'images/hotelbudaya.jpg' },
+      // Untuk kategori "kuliner"
+      { name: "Restoran Selera Toba", type: "restoran", coords: [2.5800, 99.1400], description: "Restoran dengan menu lokal.", travelCost: 50000, contact: "081950506060", image: 'images/restoranseleratoba.png' },
+      { name: "Warung Kuliner Batak", type: "restoran", coords: [2.5900, 99.1200], description: "Warung makan dengan cita rasa Batak.", travelCost: 40000, contact: "081234567891", image: 'images/warungkulinerbatak.jpg' },
+      { name: "Cafe Danau Indah", type: "restoran", coords: [2.5750, 99.1300], description: "Cafe dengan suasana nyaman di pinggir danau.", travelCost: 60000, contact: "082070708080", image: 'images/cafedanauindah.jpg' },
+      { name: "Resort Danau Toba", type: "penginapan", coords: [2.6100, 98.9700], description: "Resort mewah dengan pemandangan danau.", travelCost: 250000, contact: "081234567892", image: 'images/resortdanautoba.jpg' },
+      { name: "Homestay Samosir", type: "penginapan", coords: [2.6150, 98.9600], description: "Homestay lokal dengan harga terjangkau.", travelCost: 80000, contact: "08190901010", image: 'images/homestaysamosir.jpg' }
+    ];
+
+    // Inisialisasi peta dan layer
+    var map = L.map('map').setView([2.7, 98.9], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors', maxZoom: 18
+    }).addTo(map);
+    var markersGroup = L.layerGroup().addTo(map);
+    var accommodationMarkers = L.markerClusterGroup();
+    map.addLayer(accommodationMarkers);
+
+    var routingControl = null;
+    // Create marker for a route with a WhatsApp button in the popup, including an image
+    function createToggleMarker(place) {
+      const marker = L.marker(place.coords);
+      marker.bindPopup(
+        "<img src='" + place.image + "' alt='" + place.name + "' style='width:100%;max-width:200px;display:block;margin-bottom:5px;'>" +
+        "<strong>" + place.name + "</strong><br>" +
+        place.description + "<br>" +
+        "Koordinat: " + place.coords[0] + ", " + place.coords[1] + "<br>" +
+        "<button class='wa-btn' onclick=\"window.open('https://wa.me/" + formatWhatsAppNumber(place.contact) + "', '_blank')\">Hubungi via WhatsApp</button>"
+      );
+      marker.on('click', function () {
+        marker.openTooltip();
+      });
+      return marker;
+    }
+
+    // Tampilkan rute rekomendasi
+    const recommendedRoutes = routes[tourType] || [];
+    const resultDiv = document.getElementById('result');
+    const header = document.createElement('h2');
+    header.textContent = `Rute dari ${startLocation} ke ${destination} (${tourType}):`;
+    resultDiv.appendChild(header);
+
+    let boundsCoords = [];
+    let waypoints = [];
+    recommendedRoutes.forEach((place, index) => {
+      const routeItem = document.createElement('div');
+      routeItem.className = 'route-item';
+      routeItem.innerHTML =
+        "<img src='" + place.image + "' alt='" + place.name + "' style='width:100%;max-width:200px;display:block;margin-bottom:5px;'>" +
+        `<strong>${index + 1}. ${place.name}</strong><br>` +
+        `${place.description}<br>` +
+        `Kontak : <button class="wa-btn" onclick="window.open('https://wa.me/${formatWhatsAppNumber(place.contact)}', '_blank')">Hubungi via WhatsApp</button>`;
+      resultDiv.appendChild(routeItem);
+      const marker = createToggleMarker(place);
+      marker.addTo(markersGroup);
+      boundsCoords.push(place.coords);
+      waypoints.push(L.latLng(place.coords[0], place.coords[1]));
+    });
+    if (boundsCoords.length > 0) {
+      map.fitBounds(boundsCoords, { padding: [50, 50] });
+    }
+    routingControl = L.Routing.control({ 
+      waypoints: waypoints, 
+      routeWhileDragging: false, 
+      showAlternatives: false, 
+      lineOptions: { styles: [{ color: 'blue', opacity: 0.6, weight: 4 }] },
+      createMarker: function (i, wp, nWps) {
+        var marker = L.marker(wp.latLng);
+        if (recommendedRoutes[i] && recommendedRoutes[i].name) {
+          marker.bindTooltip(recommendedRoutes[i].name);
+        } else {
+          marker.bindTooltip("Waypoint " + (i+1));
+        }
+        marker.on('click', function () {
+          marker.openTooltip();
+        });
+        return marker;
+      }
+    }).addTo(map);
+
+    /* ------------------------------
+       Bagian Akomodasi (Multi Pilih)
+    -------------------------------*/
+    let selectedAccommodations = [];
+    function updateAccommodationList(filteredAccommodations) {
+      const listDiv = document.getElementById("accommodation-list");
+      listDiv.innerHTML = "";
+      selectedAccommodations = [];
+      document.getElementById("btn-final").disabled = true;
+      if (filteredAccommodations.length === 0) {
+        listDiv.innerHTML = "<p>Tidak ada akomodasi yang ditemukan pada rute ini.</p>";
+      } else {
+        filteredAccommodations.forEach((acc, i) => {
+          const item = document.createElement("div");
+          item.className = "accommodation-item";
+          item.innerHTML = "<img src='" + acc.image + "' alt='" + acc.name + "' style='width:100%;max-width:200px;display:block;margin-bottom:5px;'>" +
+                           `<strong>${i+1}. ${acc.name}</strong><br>
+                           ${acc.description}<br>
+                           Jenis: ${acc.type}<br>
+                           Travel Cost: ${formatRupiah(acc.travelCost)}<br>
+                           Kontak: <button class="wa-btn" onclick="window.open('https://wa.me/${formatWhatsAppNumber(acc.contact)}', '_blank')">Hubungi via WhatsApp</button>`;
+          item.addEventListener("click", function () {
+            if (item.classList.contains("selected")) {
+              item.classList.remove("selected");
+              selectedAccommodations = selectedAccommodations.filter(a => a.name !== acc.name);
+            } else {
+              item.classList.add("selected");
+              selectedAccommodations.push(acc);
+            }
+            document.getElementById("btn-final").disabled = selectedAccommodations.length === 0;
+          });
+          listDiv.appendChild(item);
+        });
+      }
+    }
+
+    function updateAccommodations(selectedType) {
+      accommodationMarkers.clearLayers();
+      let routeBounds = L.latLngBounds(boundsCoords);
+      let filtered = accommodations.filter(acc => {
+        const inBounds = routeBounds.contains(L.latLng(acc.coords[0], acc.coords[1]));
+        return selectedType === "all" ? inBounds : (inBounds && acc.type === selectedType);
+      });
+      filtered.forEach(acc => {
+        let marker = L.marker(acc.coords)
+          .bindPopup(
+            "<img src='" + acc.image + "' alt='" + acc.name + "' style='width:100%;max-width:200px;display:block;margin-bottom:5px;'>" +
+            "<strong>" + acc.name + "</strong><br>" +
+            acc.description + "<br>" +
+            "Jenis: " + acc.type + "<br>" +
+            "Travel Cost: " + formatRupiah(acc.travelCost) + "<br>" +
+            "Kontak: <br><button class='wa-btn' onclick=\"window.open('https://wa.me/" + formatWhatsAppNumber(acc.contact) + "', '_blank')\">Hubungi via WhatsApp</button>"
+          );
+        marker.bindTooltip(acc.name);
+        marker.on('click', function () {
+          marker.openTooltip();
+        });
+        accommodationMarkers.addLayer(marker);
+      });
+      updateAccommodationList(filtered);
+    }
+
+    updateAccommodations("all");
+    document.getElementById("accommodationType").addEventListener("change", function (e) {
+      updateAccommodations(e.target.value);
+    });
+
+    document.getElementById("btn-final").addEventListener("click", function () {
+      if (selectedAccommodations.length > 0) {
+        const queryParams = new URLSearchParams({
+          startLocation: startLocation,
+          destination: destination,
+          tourType: tourType,
+          accomData: JSON.stringify(selectedAccommodations)
+        });
+        window.location.href = "final.html?" + queryParams.toString();
+      } else {
+        alert("Silakan pilih setidaknya satu akomodasi terlebih dahulu.");
+      }
+    });
+  </script>
+</body>
+</html>

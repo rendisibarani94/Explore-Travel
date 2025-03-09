@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hasil Perjalanan - ExploreTravel</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Leaflet Routing Machine CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+    header { background-color: #4CAF50; padding: 20px; text-align: center; color: #fff; }
+    .container { max-width: 800px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+    #map { height: 400px; margin-top: 20px; border: 1px solid #ccc; }
+    .info { margin-top: 20px; }
+    /* Styling Card */
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card h3, .card h4 { margin-top: 0; }
+    /* Styling tombol order */
+    #orderBtn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .wa-btn {
+      padding: 5px 10px;
+      background-color: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ExploreTravel</h1>
+    <h4>Hasil Perjalanan</h4>
+  </header>
+  <div class="container">
+    <div id="map"></div>
+    <div class="info" id="info"></div>
+    <!-- Tombol untuk memesan paket perjalanan -->
+    <button id="orderBtn">Pesan Paket Perjalanan</button>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Leaflet Routing Machine JS -->
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+  <script>
+    // Fungsi untuk membaca query parameters dari URL
+    function getQueryParams() {
+      var params = {};
+      var queryString = window.location.search.substring(1);
+      var vars = queryString.split("&");
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        params[pair[0]] = decodeURIComponent(pair[1]);
+      }
+      return params;
+    }
+
+    // Fungsi untuk memformat angka ke format Rupiah (contoh: Rp.100.000.00)
+    function formatRupiah(angka) {
+      let numberString = angka.toString();
+      let sisa = numberString.length % 3;
+      let rupiah = numberString.substr(0, sisa);
+      let ribuan = numberString.substr(sisa).match(/\d{3}/g);
+      if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+      }
+      return "Rp." + rupiah + ".00";
+    }
+
+    // Helper function to convert a local phone number (starting with 0)
+    // to international format (assuming Indonesia: country code 62)
+    function formatWhatsAppNumber(phone) {
+      if (!phone) return "";
+      phone = phone.replace(/[^0-9]/g, "");
+      if (phone.startsWith("0")) {
+        return "62" + phone.substring(1);
+      }
+      return phone;
+    }
+
+    const params = getQueryParams();
+    const startLocation = params.startLocation || "Lokasi Awal";
+    const destination = params.destination || "Lokasi Tujuan";
+    const tourType = params.tourType || "";
+    // Parsing data akomodasi terpilih (sebagai array)
+    let selectedAccom = [];
+    try {
+      selectedAccom = JSON.parse(params.accomData);
+    } catch(e) {
+      selectedAccom = [];
+    }
+
+    // Data rute rekomendasi with contact, and image properties
+    const routes = {
+      sejarah: [
+        { name: 'Museum Batak (Balige, Kabupaten Toba)', coords: [2.579708, 99.137467], description: 'Museum artefak dan sejarah Batak.', contact: '08111112222', image: 'images/museumbataktoba.jpg' },
+        { name: 'Pusuk Buhit (Samosir)', coords: [2.611139, 98.948056], description: 'Tempat suci dan sejarah budaya Batak.', contact: '08111112223', image: 'images/pusukbuhit.jpg' },
+        { name: 'Tugu Pahlawan (Balige, Kabupaten Toba)', coords: [2.592911, 99.115825], description: 'Tugu mengenang perjuangan kemerdekaan.', contact: '08111113333', image: 'images/tugupahlawan.jpg' }
+      ],
+      alam: [
+        { name: 'Air Terjun Sipiso-piso (Karo)', coords: [2.9733, 98.3583], description: 'Air terjun tinggi di Indonesia.', contact: '08225555666', image: 'images/airterjunsipiso.jpg' },
+        { name: 'Bukit Simarjarunjung (Dairi)', coords: [2.691888, 98.577173], description: 'Pemandangan luar biasa ke Danau Toba.', contact: '08226666777', image: 'images/simarjarunjung.jpg' },
+        { name: 'Pantai Pasir Putih (Pangururan, Samosir)', coords: [2.7415, 98.5476], description: 'Pantai dengan panorama Danau Toba yang menawan.', contact: '08227777888', image: 'images/pantaipasirputih.jpg' }
+      ],
+      budaya: [
+        { name: 'Museum Batak (Balige, Kabupaten Toba)', coords: [2.579708, 99.137467], description: 'Museum artefak dan sejarah Batak.', contact: '08111112222', image: 'images/museumbataktoba.jpg' },
+        { name: 'Pusuk Buhit (Samosir)', coords: [2.611139, 98.948056], description: 'Tempat suci dan sejarah budaya Batak.', contact: '08111112223', image: 'images/pusukbuhit.jpg' },
+        { name: 'Tomok (Samosir)', coords: [2.6613, 98.1147], description: 'Desa Tomok dengan tradisi Batak Toba.', contact: '08129990000', image: 'images/tomok.jpg' },
+        { name: 'Tarian Tor-Tor (Samosir)', coords: [2.6613, 98.1147], description: 'Tarian tradisional Batak.', contact: '08121212121', image: 'images/tortorsamosir.jpeg' },
+        { name: 'Desa Huta Siallagan (Samosir)', coords: [2.6667, 98.0971], description: 'Desa dengan rumah adat Batak.', contact: '081210102020', image: 'images/desasiallagan.jpg' }
+      ],
+      kuliner: [
+        { name: 'Restoran Sate Kelinci (Parapat, Simalungun)', coords: [2.2204, 98.8876], description: 'Restoran sate kelinci khas Danau Toba.', contact: '08125121213', image: 'images/satekelinci.jpg' },
+        { name: 'Mie Gomak (Tapanuli Utara)', coords: [2.9378, 98.4303], description: 'Mie khas Batak dengan bumbu kacang.', contact: '08129123456', image: 'images/miegomak.jpg' },
+        { name: 'Bolu Toba (Balige, Toba)', coords: [2.5724, 99.1376], description: 'Kue bolu khas Danau Toba.', contact: '08126141415', image: 'images/bolutoba.jpeg' }
+      ]
+    };
+
+    const recommendedRoutes = routes[tourType] || [];
+    let boundsCoords = [];
+    let waypoints = [];
+    recommendedRoutes.forEach((place, i) => {
+      boundsCoords.push(place.coords);
+      waypoints.push(L.latLng(place.coords[0], place.coords[1]));
+    });
+
+    // Inisialisasi peta
+    var map = L.map('map').setView([2.7, 98.9], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 18
+    }).addTo(map);
+    if (boundsCoords.length > 0) { 
+      map.fitBounds(boundsCoords, { padding: [50, 50] });
+    }
+    
+    // Tambahkan kontrol routing untuk rute rekomendasi
+    L.Routing.control({ 
+      waypoints: waypoints, 
+      routeWhileDragging: false, 
+      showAlternatives: false, 
+      lineOptions: { styles: [{ color: 'blue', opacity: 0.6, weight: 4 }] },
+      createMarker: function(i, wp, nWps) {
+        var marker = L.marker(wp.latLng);
+        if (recommendedRoutes[i] && recommendedRoutes[i].name) {
+          marker.bindTooltip(recommendedRoutes[i].name);
+        } else {
+          marker.bindTooltip("Waypoint " + (i+1));
+        }
+        return marker;
+      }
+    }).addTo(map);
+
+    // Menyiapkan informasi ringkasan perjalanan
+    const infoDiv = document.getElementById("info");
+    let html = `<h2>Rincian Perjalanan</h2>
+                <p><strong>Rute:</strong> ${startLocation} ke ${destination} (${tourType})</p>
+                <h3>Daftar Rute Perjalanan:</h3>`;
+    if (recommendedRoutes.length === 0) {
+      html += `<p>Tidak ada rute yang ditemukan.</p>`;
+    } else {
+      recommendedRoutes.forEach((place, i) => {
+        html += `<div class="card">
+                    <img src="${place.image}" alt="${place.name}" style="width:100%;max-width:200px;display:block;margin-bottom:5px;">
+                    <h4>${i+1}. ${place.name}</h4>
+                    <p><strong>Deskripsi:</strong> ${place.description}</p>
+                    <button class="wa-btn" onclick="window.open('https://wa.me/${formatWhatsAppNumber(place.contact)}', '_blank')">Hubungi via WhatsApp</button>
+                 </div>`;
+      });
+    }
+
+    html += `<h3>Akomodasi Terpilih:</h3>`;
+    let totalHarga = 0;
+    if(selectedAccom.length === 0){
+      html += `<p>Tidak ada akomodasi yang dipilih.</p>`;
+    } else {
+      selectedAccom.forEach((acc, i) => {
+        totalHarga += Number(acc.travelCost);
+        html += `<div class="card">
+                    <img src="${acc.image}" alt="${acc.name}" style="width:100%;max-width:200px;display:block;margin-bottom:5px;">
+                    <h4>${i+1}. ${acc.name}</h4>
+                    <p><strong>Jenis:</strong> ${acc.type}</p>
+                    <p><strong>Deskripsi:</strong> ${acc.description}</p>
+                    <p><strong>Travel Cost:</strong> ${formatRupiah(acc.travelCost)}</p>
+                    <button class="wa-btn" onclick="window.open('https://wa.me/${formatWhatsAppNumber(acc.contact)}', '_blank')">Hubungi via WhatsApp</button>
+                 </div>`;
+      });
+      html += `<div class="card">
+                  <h3>Total Harga</h3>
+                  <p><strong>${formatRupiah(totalHarga)}</strong></p>
+               </div>`;
+    }
+    infoDiv.innerHTML = html;
+    
+    // Tampilkan marker dan path untuk akomodasi yang dipilih di peta
+    if (selectedAccom.length > 0) {
+      let accomWaypoints = [];
+      selectedAccom.forEach(acc => {
+        accomWaypoints.push(L.latLng(acc.coords[0], acc.coords[1]));
+        L.marker(acc.coords).addTo(map)
+          .bindPopup(
+            `<img src="${acc.image}" alt="${acc.name}" style="width:100%;max-width:200px;display:block;margin-bottom:5px;">
+             <strong>${acc.name}</strong><br>${acc.description}<br>Jenis: ${acc.type}<br>
+             Travel Cost: ${formatRupiah(acc.travelCost)}<br>
+             <button class="wa-btn" onclick="window.open('https://wa.me/${formatWhatsAppNumber(acc.contact)}', '_blank')">Hubungi via WhatsApp</button>`
+          )
+          .bindTooltip(acc.name);
+      });
+      L.Routing.control({
+        waypoints: accomWaypoints,
+        routeWhileDragging: false,
+        showAlternatives: false,
+        lineOptions: { styles: [{ color: 'green', opacity: 0.8, weight: 4 }] },
+        createMarker: function(i, wp, nWps) {
+          var marker = L.marker(wp.latLng);
+          if (selectedAccom[i] && selectedAccom[i].name) {
+            marker.bindTooltip(selectedAccom[i].name);
+          } else {
+            marker.bindTooltip("Accom " + (i+1));
+          }
+          return marker;
+        }
+      }).addTo(map);
+    }
+    
+    document.getElementById("orderBtn").addEventListener("click", function() {
+      window.location.href = "purchased.html";
+    });
+  </script>
+</body>
+</html>

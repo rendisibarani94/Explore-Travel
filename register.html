@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrasi - ExploreTravel</title>
+    <style>
+        /* Styling dasar */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form input {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+
+        form button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 3px;
+        }
+
+        form button:hover {
+            background-color: #45a049;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>ExploreTravel</h1>
+    <h4>Daftar untuk Memulai Perjalanan Anda</h4>
+</header>
+
+<div class="container">
+    <form id="registerForm">
+        <input type="text" id="fullname" placeholder="Nama Lengkap" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Kata Sandi" required>
+        <input type="password" id="confirm_password" placeholder="Konfirmasi Kata Sandi" required>
+        <button type="submit">Daftar</button>
+    </form>
+    <div class="login-link">
+        <p>Sudah punya akun? <a href="login.html">Masuk di sini</a></p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
+        e.preventDefault(); // Mencegah form dari pengiriman default
+
+        // Ambil nilai input
+        const fullname = document.getElementById('fullname').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+
+        // Validasi password
+        if (password !== confirmPassword) {
+            alert('Kata sandi dan konfirmasi kata sandi tidak cocok!');
+            return;
+        }
+
+        // Simulasi pendaftaran berhasil
+        alert('Registrasi berhasil! Selamat datang, ' + fullname + '!');
+
+        // Arahkan ke halaman index.html
+        window.location.href = 'index.html';
+    });
+</script>
+
+</body>
+</html>

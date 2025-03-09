@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Data - ExploreTravel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #4CAF50;
+      padding: 20px;
+      text-align: center;
+      color: #fff;
+      position: relative;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto 20px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    form input,
+    form select,
+    form button {
+      padding: 10px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+    }
+    form button {
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ExploreTravel</h1>
+    <h4>Making Your Journey Effortless and Meaningful</h4>
+  </header>
+  <div class="container">
+    <form action="result.html" method="GET">
+      <input type="text" name="startLocation" placeholder="Lokasi Awal (misal: Balige)" required>
+      <input type="text" name="destination" placeholder="Lokasi Tujuan (misal: Samosir)" required>
+      <select name="tourType" required>
+        <option value="">Pilih Kategori Wisata</option>
+        <option value="sejarah">Sejarah</option>
+        <option value="alam">Alam</option>
+        <option value="budaya">Budaya</option>
+        <option value="kuliner">Kuliner</option>
+      </select>
+      <button type="submit">Rekomendasikan Rute</button>
+    </form>
+  </div>
+
+</body>
+</html>
