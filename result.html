@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,12 +19,14 @@
       margin: 0;
       padding: 0;
     }
+
     header {
       background-color: #4CAF50;
       padding: 20px;
       text-align: center;
       color: #fff;
     }
+
     .container {
       max-width: 800px;
       margin: 20px auto;
@@ -32,11 +35,13 @@
       border-radius: 5px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
+
     #map {
       height: 400px;
       margin-top: 20px;
       border: 1px solid #ccc;
     }
+
     .route-item,
     .accommodation-item {
       background-color: #e9f5e9;
@@ -45,19 +50,23 @@
       border-left: 5px solid #4CAF50;
       cursor: pointer;
     }
+
     .accommodation-item.selected {
       border: 2px solid #4CAF50;
       background-color: #d0f0c0;
     }
+
     .accommodation-section {
       margin-top: 30px;
     }
+
     .accommodation-section select {
       padding: 10px;
       border-radius: 3px;
       border: 1px solid #ccc;
       margin-bottom: 10px;
     }
+
     #btn-final {
       padding: 10px 20px;
       background-color: #4CAF50;
@@ -66,10 +75,12 @@
       border-radius: 3px;
       cursor: pointer;
     }
+
     #btn-final:disabled {
       background-color: #ccc;
       cursor: not-allowed;
     }
+
     button.wa-btn {
       padding: 5px 10px;
       margin-top: 5px;
@@ -81,6 +92,7 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <h1>ExploreTravel</h1>
@@ -156,45 +168,49 @@
     // Data rute destinasi with phone contacts and image paths from images directory
     const routes = {
       sejarah: [
-        { name: 'Museum Batak (Balige, Kabupaten Toba)', coords: [2.579708, 99.137467], description: 'Museum artefak dan sejarah Batak.', contact: '08111112222', image: 'images/museumbataktoba.jpg' },
-        { name: 'Pusuk Buhit (Samosir)', coords: [2.611139, 98.948056], description: 'Tempat suci dan sejarah budaya Batak.', contact: '08111112223', image: 'images/pusukbuhit.jpg' },
-        { name: 'Tugu Pahlawan (Balige, Kabupaten Toba)', coords: [2.592911, 99.115825], description: 'Tugu mengenang perjuangan kemerdekaan.', contact: '08111113333', image: 'images/tugupahlawan.jpg' }
+        { name: 'Museum Batak (Balige, Kabupaten Toba)', coords: [2.333330, 99.048439], description: 'Museum artefak dan sejarah Batak.', contact: '08111112222', image: 'images/museumbataktoba.jpg' },
+        { name: 'Pusuk Buhit (Samosir)', coords: [2.6015348981235022, 98.6518679969], description: 'Tempat suci dan sejarah budaya Batak.', contact: '08111112223', image: 'images/pusukbuhit.jpg' },
+        { name: 'Tugu Pahlawan (Balige, Kabupaten Toba)', coords: [2.334894993869316, 99.06390186265087], description: 'Tugu mengenang perjuangan kemerdekaan.', contact: '08111113333', image: 'images/tugupahlawan.jpg' }
       ],
       alam: [
-        { name: 'Air Terjun Sipiso-piso (Karo)', coords: [2.9733, 98.3583], description: 'Air terjun tinggi di Indonesia.', contact: '08225555666', image: 'images/airterjunsipiso.jpg' },
-        { name: 'Bukit Simarjarunjung (Dairi)', coords: [2.691888, 98.577173], description: 'Pemandangan luar biasa ke Danau Toba.', contact: '08226666777', image: 'images/simarjarunjung.jpg' },
-        { name: 'Pantai Pasir Putih (Pangururan, Samosir)', coords: [2.7415, 98.5476], description: 'Pantai dengan panorama Danau Toba yang menawan.', contact: '08227777888', image: 'images/pantaipasirputih.jpg' }
+        { name: 'Air Terjun Sipiso-piso (Karo)', coords: [2.9167962342790723, 98.51958531092438], description: 'Air terjun tinggi di Indonesia.', contact: '08225555666', image: 'images/airterjunsipiso.jpg' },
+        { name: 'Bukit Simarjarunjung (Dairi)', coords: [2.8135062969462616, 98.78123241352905], description: 'Pemandangan luar biasa ke Danau Toba.', contact: '08226666777', image: 'images/simarjarunjung.jpg' },
+        { name: 'Pantai Pasir Putih (Pangururan, Samosir)', coords: [2.696166829694886, 98.68964140300506], description: 'Pantai dengan panorama Danau Toba yang menawan.', contact: '08227777888', image: 'images/pantaipasirputih.jpg' }
       ],
       budaya: [
-        { name: 'Tomok (Samosir)', coords: [2.6613, 98.1147], description: 'Desa Tomok dengan tradisi Batak Toba.', contact: '08129990000', image: 'images/tomok.jpg' },
-        { name: 'Tarian Tor-Tor (Samosir)', coords: [2.6613, 98.1147], description: 'Tarian tradisional Batak.', contact: '08121212121', image: 'images/tortorsamosir.jpeg' },
-        { name: 'Desa Huta Siallagan (Samosir)', coords: [2.6667, 98.0971], description: 'Desa dengan rumah adat Batak.', contact: '081210102020', image: 'images/desasiallagan.jpg' }
+        { name: 'Tomok (Samosir)', coords: [2.6522783375904995, 98.8626234538635], description: 'Desa Tomok dengan tradisi Batak Toba.', contact: '08129990000', image: 'images/tomok.jpg' },
+        { name: 'Tarian Tor-Tor (Samosir)', coords: [2.652364098429818, 98.8606708757015], description: 'Tarian tradisional Batak.', contact: '08121212121', image: 'images/tortorsamosir.jpeg' },
+        { name: 'Desa Huta Siallagan (Samosir)', coords: [2.679234402854014, 98.83629748684892], description: 'Desa dengan rumah adat Batak.', contact: '081210102020', image: 'images/desasiallagan.jpg' }
       ],
       kuliner: [
-        { name: 'Restoran Sate Kelinci (Parapat, Simalungun)', coords: [2.2204, 98.8876], description: 'Restoran sate kelinci khas Danau Toba.', contact: '08125121213', image: 'images/satekelinci.jpg' },
-        { name: 'Mie Gomak (Tapanuli Utara)', coords: [2.9378, 98.4303], description: 'Mie khas Batak dengan bumbu kacang.', contact: '08129123456', image: 'images/miegomak.jpg' },
-        { name: 'Bolu Toba (Balige, Toba)', coords: [2.5724, 99.1376], description: 'Kue bolu khas Danau Toba.', contact: '08126141415', image: 'images/bolutoba.jpeg' }
+        { name: 'Restoran Sate Madura', coords: [2.610646036695568, 98.70387605744791], description: 'Restoran sate Madura di Danau Toba.', contact: '08125121213', image: 'images/satekelinci.jpg' },
+        { name: 'Mie Gomak (Tapanuli Utara)', coords: [2.023505417597629, 98.96937074302849], description: 'Mie khas Batak dengan bumbu kacang.', contact: '08129123456', image: 'images/miegomak.jpg' },
+        { name: 'Bolu Toba (Balige, Toba)', coords: [2.26324322640468, 98.9877478516757], description: 'Kue bolu khas Danau Toba.', contact: '08126141415', image: 'images/bolutoba.jpeg' }
       ]
     };
 
     // Data akomodasi with phone contacts and image paths
     const accommodations = [
+      // Sejarah (within sejarah route bounds: lat ~2.33–2.60, lon ~98.65–99.06)
       { name: "Hotel Danau Toba", type: "penginapan", coords: [2.6000, 98.9000], description: "Hotel nyaman dekat Danau Toba.", travelCost: 150000, contact: "081234567890", image: 'images/hoteldanautoba.jpg' },
-      { name: "Villa Samosir", type: "penginapan", coords: [2.6200, 98.9500], description: "Villa dengan pemandangan indah.", travelCost: 200000, contact: "081298765432", image: 'images/vilasamosir.jpg' },
-      { name: "Penginapan Museum Batak", type: "penginapan", coords: [2.5805, 99.1370], description: "Akomodasi dekat Museum Batak.", travelCost: 130000, contact: "081233332222", image: 'images/penginapanmuseum.jpg' },
-      { name: "Guest House Pusuk Buhit", type: "penginapan", coords: [2.6120, 98.9490], description: "Guest house dekat Pusuk Buhit.", travelCost: 110000, contact: "081322223333", image: 'images/vilapusukbuhit.JPG' },
-      { name: "Villa Tugu Pahlawan", type: "penginapan", coords: [2.5935, 99.1160], description: "Villa nyaman dekat Tugu Pahlawan.", travelCost: 180000, contact: "081244445555", image: 'images/vilatugupahlawan.jpg' },
-      // Untuk kategori "alam"
-      { name: "Resort Bukit Simarjarunjung", type: "penginapan", coords: [2.6920, 98.5775], description: "Resort dengan pemandangan bukit dan danau.", travelCost: 230000, contact: "081612345678", image: 'images/resortsimarjarunjung.jpg' },
-      { name: "Penginapan Pantai Pasir Putih Samosir", type: "penginapan", coords: [2.7420, 98.5480], description: "Penginapan dekat Pantai Pasir Putih.", travelCost: 120000, contact: "081688889999", image: 'images/penginapanpasirputih.jpg' },
-     // Untuk kategori "budaya"
-      { name: "Hotel Budaya Toba", type: "penginapan", coords: [2.5802, 99.1372], description: "Hotel dengan sentuhan budaya Batak.", travelCost: 160000, contact: "081710102020", image: 'images/hotelbudaya.jpg' },
-      // Untuk kategori "kuliner"
-      { name: "Restoran Selera Toba", type: "restoran", coords: [2.5800, 99.1400], description: "Restoran dengan menu lokal.", travelCost: 50000, contact: "081950506060", image: 'images/restoranseleratoba.png' },
-      { name: "Warung Kuliner Batak", type: "restoran", coords: [2.5900, 99.1200], description: "Warung makan dengan cita rasa Batak.", travelCost: 40000, contact: "081234567891", image: 'images/warungkulinerbatak.jpg' },
-      { name: "Cafe Danau Indah", type: "restoran", coords: [2.5750, 99.1300], description: "Cafe dengan suasana nyaman di pinggir danau.", travelCost: 60000, contact: "082070708080", image: 'images/cafedanauindah.jpg' },
-      { name: "Resort Danau Toba", type: "penginapan", coords: [2.6100, 98.9700], description: "Resort mewah dengan pemandangan danau.", travelCost: 250000, contact: "081234567892", image: 'images/resortdanautoba.jpg' },
-      { name: "Homestay Samosir", type: "penginapan", coords: [2.6150, 98.9600], description: "Homestay lokal dengan harga terjangkau.", travelCost: 80000, contact: "08190901010", image: 'images/homestaysamosir.jpg' }
+      { name: "Villa Samosir", type: "penginapan", coords: [2.5900, 98.9500], description: "Villa dengan pemandangan indah.", travelCost: 200000, contact: "081298765432", image: 'images/vilasamosir.jpg' },
+      { name: "Penginapan Museum Batak", type: "penginapan", coords: [2.5805, 99.0500], description: "Akomodasi dekat Museum Batak.", travelCost: 130000, contact: "081233332222", image: 'images/penginapanmuseum.jpg' },
+      { name: "Guest House Pusuk Buhit", type: "penginapan", coords: [2.5950, 98.9450], description: "Guest house dekat Pusuk Buhit.", travelCost: 110000, contact: "081322223333", image: 'images/vilapusukbuhit.JPG' },
+      { name: "Villa Tugu Pahlawan", type: "penginapan", coords: [2.5935, 99.0450], description: "Villa nyaman dekat Tugu Pahlawan.", travelCost: 180000, contact: "081244445555", image: 'images/vilatugupahlawan.jpg' },
+
+      // Alam (within alam route bounds: lat ~2.70–2.92, lon ~98.52–98.78)
+      { name: "Resort Bukit Simarjarunjung", type: "penginapan", coords: [2.7300, 98.6000], description: "Resort dengan pemandangan bukit dan danau.", travelCost: 230000, contact: "081612345678", image: 'images/resortsimarjarunjung.jpg' },
+      { name: "Penginapan Pantai Pasir Putih Samosir", type: "penginapan", coords: [2.7500, 98.5800], description: "Penginapan dekat Pantai Pasir Putih.", travelCost: 120000, contact: "081688889999", image: 'images/penginapanpasirputih.jpg' },
+
+      // Budaya (within budaya route bounds: lat ~2.65–2.68, lon ~98.84–98.86)
+      { name: "Hotel Budaya Toba", type: "penginapan", coords: [2.6650, 98.8500], description: "Hotel dengan sentuhan budaya Batak.", travelCost: 160000, contact: "081710102020", image: 'images/hotelbudaya.jpg' },
+
+      // Kuliner (within kuliner route bounds: lat ~2.02–2.61, lon ~98.70–98.99)
+      { name: "Restoran Selera Toba", type: "restoran", coords: [2.6000, 98.7200], description: "Restoran dengan menu lokal.", travelCost: 50000, contact: "081950506060", image: 'images/restoranseleratoba.png' },
+      { name: "Warung Kuliner Batak", type: "restoran", coords: [2.5800, 98.7400], description: "Warung makan dengan cita rasa Batak.", travelCost: 40000, contact: "081234567891", image: 'images/warungkulinerbatak.jpg' },
+      { name: "Cafe Danau Indah", type: "restoran", coords: [2.5700, 98.7300], description: "Cafe dengan suasana nyaman di pinggir danau.", travelCost: 60000, contact: "082070708080", image: 'images/cafedanauindah.jpg' },
+      { name: "Resort Danau Toba", type: "penginapan", coords: [2.6100, 98.7500], description: "Resort mewah dengan pemandangan danau.", travelCost: 250000, contact: "081234567892", image: 'images/resortdanautoba.jpg' },
+      { name: "Homestay Samosir", type: "penginapan", coords: [2.6050, 98.7400], description: "Homestay lokal dengan harga terjangkau.", travelCost: 80000, contact: "08190901010", image: 'images/homestaysamosir.jpg' }
     ];
 
     // Inisialisasi peta dan layer
@@ -249,17 +265,17 @@
     if (boundsCoords.length > 0) {
       map.fitBounds(boundsCoords, { padding: [50, 50] });
     }
-    routingControl = L.Routing.control({ 
-      waypoints: waypoints, 
-      routeWhileDragging: false, 
-      showAlternatives: false, 
+    routingControl = L.Routing.control({
+      waypoints: waypoints,
+      routeWhileDragging: false,
+      showAlternatives: false,
       lineOptions: { styles: [{ color: 'blue', opacity: 0.6, weight: 4 }] },
       createMarker: function (i, wp, nWps) {
         var marker = L.marker(wp.latLng);
         if (recommendedRoutes[i] && recommendedRoutes[i].name) {
           marker.bindTooltip(recommendedRoutes[i].name);
         } else {
-          marker.bindTooltip("Waypoint " + (i+1));
+          marker.bindTooltip("Waypoint " + (i + 1));
         }
         marker.on('click', function () {
           marker.openTooltip();
@@ -284,7 +300,7 @@
           const item = document.createElement("div");
           item.className = "accommodation-item";
           item.innerHTML = "<img src='" + acc.image + "' alt='" + acc.name + "' style='width:100%;max-width:200px;display:block;margin-bottom:5px;'>" +
-                           `<strong>${i+1}. ${acc.name}</strong><br>
+            `<strong>${i + 1}. ${acc.name}</strong><br>
                            ${acc.description}<br>
                            Jenis: ${acc.type}<br>
                            Travel Cost: ${formatRupiah(acc.travelCost)}<br>
@@ -350,4 +366,5 @@
     });
   </script>
 </body>
-</html>
+
+</html>2
