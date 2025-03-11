@@ -5,40 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - ExploreTravel</title>
   <style>
+    /* Basic Styles */
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
       margin: 0;
       padding: 0;
     }
+    header {
+      background-color: #4CAF50;
+      padding: 20px;
+      text-align: center;
+      color: #fff;
+    }
     .container {
       max-width: 400px;
-      margin: 80px auto;
+      margin: 50px auto;
       background: #fff;
       padding: 20px;
       border-radius: 5px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      text-align: center;
     }
     form {
       display: flex;
       flex-direction: column;
-      gap: 15px;
     }
     form input {
       padding: 10px;
+      margin: 10px 0;
       border-radius: 3px;
       border: 1px solid #ccc;
     }
     form button {
-      padding: 10px;
-      border-radius: 3px;
-      border: none;
       background-color: #4CAF50;
       color: #fff;
+      border: none;
       cursor: pointer;
+      padding: 10px;
+      border-radius: 3px;
+    }
+    form button:hover {
+      background-color: #45a049;
     }
     .register-link {
+      text-align: center;
       margin-top: 10px;
     }
     .register-link a {
@@ -49,8 +59,11 @@
   </style>
 </head>
 <body>
+  <header>
+    <h1>ExploreTravel</h1>
+    <h4>Masuk untuk Memulai Perjalanan Anda</h4>
+  </header>
   <div class="container">
-    <h2>Login</h2>
     <form id="loginForm">
       <input type="text" id="username" placeholder="Username" required>
       <input type="password" id="password" placeholder="Password" required>
@@ -62,13 +75,13 @@
   </div>
 
   <script>
-    // Contoh login sederhana: username "admin" dan password "admin"
+    // Simple login example: username "admin" and password "admin"
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
       if(username === "admin" && password === "admin"){
-        // Tandai status login menggunakan localStorage
+        // Mark login status using localStorage
         localStorage.setItem('loggedIn', 'true');
         window.location.href = "index.html";
       } else {
